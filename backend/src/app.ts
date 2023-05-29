@@ -1,0 +1,22 @@
+import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
+import washroomRouter from "./routes/washroomRoutes";
+
+dotenv.config();
+
+const app: Express = express();
+const port = process.env.PORT;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use("/api", washroomRouter);
+
+app.listen(port, () => {
+  console.log(`[server]: Server is running at http://localhost:${port}`);
+});
+
+app.post("/post", (req: Request, res: Response) => {
+  console.log("request received");
+  res.send(req.body);
+});
