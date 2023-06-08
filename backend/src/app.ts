@@ -1,6 +1,10 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import washroomRouter from "./routes/washroomRoutes";
+import { errorHandler } from "./middleware/errorMiddleware";
+import { connectDB } from "./config/db";
+
+connectDB();
 
 dotenv.config();
 
@@ -11,6 +15,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api", washroomRouter);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

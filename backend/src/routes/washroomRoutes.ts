@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 
 import {
   deleteWashroom,
+  getWashroom,
   getWashrooms,
   setWashroom,
   updateWashroom,
@@ -10,6 +11,8 @@ import {
 let router = express.Router();
 
 router.get("/", getWashrooms);
+
+router.get("/:id", getWashroom);
 
 router.post("/", setWashroom);
 
