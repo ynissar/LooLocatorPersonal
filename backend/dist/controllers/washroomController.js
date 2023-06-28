@@ -23,30 +23,39 @@ const getWashrooms = (0, express_async_handler_1.default)((req, res) => __awaite
     res.status(200).json({ washrooms });
 }));
 exports.getWashrooms = getWashrooms;
-// @desc Get washrooms
+// @desc Get a washroom
 // @route GET /api
 // @access Private
 const getWashroom = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({ message: `get washroom ${req.params.id}` });
+    const washroom = yield washroomModel_1.washroomModel.findById(req.params.id);
+    res.status(200).json({ washroom });
 }));
 exports.getWashroom = getWashroom;
-// @desc set washrooms
+// @desc set a washroom
 // @route POST /api
 // @access Private
 const setWashroom = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.body.name) {
-        res.status(400);
-        throw new Error("please add first name");
-    }
+    //! ADD DATA VALIDATION
     const washroom = yield washroomModel_1.washroomModel.create({
         name: req.body.name,
+        rating: req.body.rating,
+        numberOfRaters: req.body.numberOfRaters,
         coordinates: {
-            x: req.body.coordinates.x,
-            y: req.body.coordinates.y,
+            longitude: req.body.coordinates.longitude,
+            latitude: req.body.coordinates.latitude,
         },
         street: req.body.street,
-        accessibleWashroom: req.body.accessibleWashroom,
-        description: req.body.description,
+        accessibility: {
+            genderless: req.body.accessibility.genderless,
+            childFriendly: req.body.accessibility.childFriendly,
+            disabilityFriendly: req.body.accessibility.disabilityFriendly,
+        },
+        traitRatings: {
+            clean: req.body.traitRatings.clean,
+            safe: req.body.traitRatings.safe,
+            privacy: req.body.traitRatings.privacy,
+            wellSupplied: req.body.traitRatings.wellSupplied,
+        },
     });
     res.status(200).json({ washroom });
 }));
