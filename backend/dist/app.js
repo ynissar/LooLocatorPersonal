@@ -16,6 +16,9 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use("/api", washroomRoutes_1.default);
 app.use(errorMiddleware_1.errorHandler);
+app.get("/test", (req, res) => {
+    res.json({ message: "Connected to backend successfully!" });
+});
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });

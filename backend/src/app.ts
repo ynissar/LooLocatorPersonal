@@ -18,6 +18,10 @@ app.use("/api", washroomRouter);
 
 app.use(errorHandler);
 
+app.get("/test", (req, res) => {
+  res.json({ message: "Connected to backend successfully!" });
+});
+
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
