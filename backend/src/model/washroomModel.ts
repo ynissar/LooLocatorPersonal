@@ -14,12 +14,12 @@ interface IWashroom {
     childFriendly?: boolean;
     disabilityFriendly?: boolean;
   };
-  traitRatings: {
-    clean?: number;
-    safe?: number;
-    privacy?: number;
-    wellSupplied?: number;
-  };
+  comments: [
+    {
+      username?: string;
+      comment?: string;
+    }
+  ];
 }
 
 const washroomSchema = new Schema<IWashroom>({
@@ -36,12 +36,12 @@ const washroomSchema = new Schema<IWashroom>({
     childFriendly: Boolean,
     disabilityFriendly: Boolean,
   },
-  traitRatings: {
-    clean: Number,
-    safe: Number,
-    private: Number,
-    wellSupplied: Number,
-  },
+  comments: [
+    {
+      username: String,
+      comment: String,
+    },
+  ],
 });
 
 const washroomModel = model<IWashroom>("washroomModel", washroomSchema);

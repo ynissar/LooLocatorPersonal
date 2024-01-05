@@ -50,12 +50,12 @@ const setWashroom = (0, express_async_handler_1.default)((req, res) => __awaiter
             childFriendly: req.body.accessibility.childFriendly,
             disabilityFriendly: req.body.accessibility.disabilityFriendly,
         },
-        traitRatings: {
-            clean: req.body.traitRatings.clean,
-            safe: req.body.traitRatings.safe,
-            privacy: req.body.traitRatings.privacy,
-            wellSupplied: req.body.traitRatings.wellSupplied,
-        },
+        comments: [
+            {
+                username: req.body.comments.username,
+                comment: req.body.comments.comment,
+            },
+        ],
     });
     res.status(200).json({ washroom });
 }));

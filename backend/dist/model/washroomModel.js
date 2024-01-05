@@ -16,12 +16,12 @@ const washroomSchema = new mongoose_1.Schema({
         childFriendly: Boolean,
         disabilityFriendly: Boolean,
     },
-    traitRatings: {
-        clean: Number,
-        safe: Number,
-        private: Number,
-        wellSupplied: Number,
-    },
+    comments: [
+        {
+            username: String,
+            comment: String,
+        },
+    ],
 });
 const washroomModel = (0, mongoose_1.model)("washroomModel", washroomSchema);
 exports.washroomModel = washroomModel;
