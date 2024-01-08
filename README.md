@@ -1,1 +1,1 @@
-# LooLocatorPersonal
+# LooLocator
