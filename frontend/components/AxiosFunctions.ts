@@ -2,7 +2,7 @@ import axios from "axios";
 import { IWashroom } from "../types";
 import { update } from "lodash";
 
-const baseUrl = "http://10.0.0.165:8000/";
+const baseUrl = "http://10.0.0.163:8000/";
 
 const axiosInstance = axios.create({ baseURL: baseUrl });
 

@@ -26,15 +26,23 @@ import { IWashroom } from "../../types";
 import { fetchWashrooms, axiosTest } from "../../components/AxiosFunctions";
 import { WashroomDataContext } from "../../components/MyContext";
 import lodash from "lodash";
+import {getDistance, orderByDistance} from "geolib";
 
 const DEFAULT_LATITUDE_DELTA = 0.01522;
 const DEFAULT_LONGITUDE_DELTA = 0.01522;
 const { width, height } = Dimensions.get("window");
 
+interface IFilteredWashroom {
+  washrooms: IWashroom[];
+  distanceFromUser: number;
+}
+
+
 export default function App() {
   const [location, setLocation] = useState<LocationObject>();
   const [errorMsg, setErrorMsg] = useState<string>();
   const { washroomsState, setWashrooms } = useContext(WashroomDataContext);
+  let filteredWashrooms: IFilteredWashroom[] = [];
 
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
@@ -132,7 +140,9 @@ export default function App() {
       const washroomData = await fetchWashrooms();
       if (!lodash.isEqual(washroomData.washrooms, washroomsState)) {
         setWashrooms(washroomData.washrooms);
+        console.log(location ? "yes": "no")
         console.log("different");
+        
       } else {
         console.log("same");
       }

@@ -211,7 +211,6 @@ const styles = StyleSheet.create({
 
 const shortenAddress = (address: string) => {
   const addressList = address.split(",");
-  console.log(addressList);
   let newAddress = addressList[0] + "," + addressList[1];
   return newAddress;
 };
