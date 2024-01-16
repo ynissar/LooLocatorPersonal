@@ -36,4 +36,8 @@ Your feedback is valuable to us! If you encounter any issues or have suggestions
 ## Author
 
 - [@ynissar](https://github.com/ynissar)
-- [Based on a Hackathon project I worked on for SacHacks 2022 (won Best Startup Idea) ](https://github.com/SippinOnJuiceBox/Loo-Locator-Find-the-nearest-washroom)
+- # [Based on a Hackathon project I worked on for SacHacks 2022 (won Best Startup Idea) ](https://github.com/SippinOnJuiceBox/Loo-Locator-Find-the-nearest-washroom)
+
+# LooLocator
+
+> > > > > > > 86f10bc94f663db2a1672d9b112160d870f51305
