@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@kolking/react-native-rating": "^1.1.3",
     "@react-native-community/slider": "4.4.2",
     "@rnmapbox/maps": "^10.0.8-rc.1",
     "axios": "^1.4.0",

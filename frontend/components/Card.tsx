@@ -16,6 +16,8 @@ import {
   MaterialCommunityIcons,
   FontAwesome5,
 } from "@expo/vector-icons";
+import { convertDistance } from "geolib";
+import { shortenRating, shortenAddress, shortenDistance } from "./utils";
 
 const { width, height } = Dimensions.get("window");
 export const CARD_WIDTH = width - 80;
@@ -26,10 +28,11 @@ interface CardProps {
   title: string;
   rating: number;
   genderless?: boolean;
+  distanceFromUser: number;
   childFriendly?: boolean;
   disabilityFriendly?: boolean;
   address: string;
-  washroomIndex: number;
+  washroomContextIndex: number;
   key: number;
   onPress: () => void;
 }
@@ -40,9 +43,10 @@ const Card = ({
   rating,
   address,
   genderless,
+  distanceFromUser,
   disabilityFriendly,
   childFriendly,
-  washroomIndex,
+  washroomContextIndex,
   onPress,
 }: CardProps) => {
   const route = `./washroom/${id}`;
@@ -50,6 +54,7 @@ const Card = ({
 
   const shortenedAddress = shortenAddress(address);
   const shortenedRating = shortenRating(rating);
+  const shortenedDistance = shortenDistance(distanceFromUser);
   return (
     <View>
       <View style={styles.card}>
@@ -66,7 +71,7 @@ const Card = ({
           <View>
             <View>
               <View style={styles.secondInfoLine}>
-                <Text style={styles.distance}>XXX M</Text>
+                <Text style={styles.distance}>{shortenedDistance}</Text>
                 <View style={styles.accessibilityIcons}>
                   {genderless ? (
                     <FontAwesome5 size={18} name="genderless"></FontAwesome5>
@@ -93,16 +98,13 @@ const Card = ({
               </View>
               <Text style={styles.address}>{shortenedAddress}</Text>
             </View>
-            {/* <View style={styles.distanceInfo}>
-              <Text style={styles.distance}>XXX M</Text>
-            </View> */}
           </View>
 
           <TouchableOpacity
             onPress={() => {
               router.push({
                 pathname: route,
-                params: { washroomIndex: washroomIndex },
+                params: { washroomContextIndex: washroomContextIndex },
               });
             }}
             style={styles.button}
@@ -186,7 +188,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     height: 40,
-    backgroundColor: "purple",
+    backgroundColor: "#FF3B30",
     borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
@@ -208,14 +210,3 @@ const styles = StyleSheet.create({
     color: "#444",
   },
 });
-
-const shortenAddress = (address: string) => {
-  const addressList = address.split(",");
-  let newAddress = addressList[0] + "," + addressList[1];
-  return newAddress;
-};
-
-const shortenRating = (rating: number) => {
-  const shortenedRating = rating.toFixed(1);
-  return shortenedRating;
-};

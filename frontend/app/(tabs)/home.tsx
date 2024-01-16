@@ -25,24 +25,25 @@ import { Link } from "expo-router";
 import { IWashroom } from "../../types";
 import { fetchWashrooms, axiosTest } from "../../components/AxiosFunctions";
 import { WashroomDataContext } from "../../components/MyContext";
-import lodash from "lodash";
-import {getDistance, orderByDistance} from "geolib";
+import lodash, { filter } from "lodash";
+import { getDistance, orderByDistance } from "geolib";
 
 const DEFAULT_LATITUDE_DELTA = 0.01522;
 const DEFAULT_LONGITUDE_DELTA = 0.01522;
 const { width, height } = Dimensions.get("window");
 
-interface IFilteredWashroom {
-  washrooms: IWashroom[];
+interface IFilteredWashroom extends IWashroom {
   distanceFromUser: number;
+  washroomContextIndex: number;
 }
-
 
 export default function App() {
   const [location, setLocation] = useState<LocationObject>();
   const [errorMsg, setErrorMsg] = useState<string>();
   const { washroomsState, setWashrooms } = useContext(WashroomDataContext);
   let filteredWashrooms: IFilteredWashroom[] = [];
+  const [userDistanceWashrooms, setUserDistanceWashrooms] =
+    useState<IFilteredWashroom[]>();
 
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
@@ -72,8 +73,8 @@ export default function App() {
   useEffect(() => {
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3);
-      if (index >= washroomsState?.length) {
-        index = washroomsState?.length - 1;
+      if (index >= userDistanceWashrooms?.length) {
+        index = userDistanceWashrooms?.length - 1;
       }
       if (index <= 0) {
         index = 0;
@@ -81,8 +82,8 @@ export default function App() {
 
       if (mapIndex != index) {
         mapIndex = index;
-        const { latitude, longitude } = washroomsState[index].coordinates;
-        console.log(latitude, longitude);
+        const { latitude, longitude } =
+          userDistanceWashrooms[index].coordinates;
         _mapView?.animateCamera(
           {
             center: {
@@ -97,7 +98,7 @@ export default function App() {
   });
 
   // interpolation used to change scale of map marker based on which is currently being focused on
-  const interpolations = washroomsState?.map((washroomMarker, index) => {
+  const interpolations = userDistanceWashrooms?.map((washroomMarker, index) => {
     const inputRange = [
       (index - 1) * CARD_WIDTH,
       index * CARD_WIDTH,
@@ -113,11 +114,11 @@ export default function App() {
     return { scale };
   });
 
-  // runs on first mount -> saves current location in state
+  // !subscriber for location updates
   useEffect(() => {
-    console.log("did run");
-    const fetchLocation = async () => {
-      console.log("async run");
+    let locationSubscription;
+
+    const startLocationTracking = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== "granted") {
@@ -125,24 +126,27 @@ export default function App() {
         return;
       }
 
-      let currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: 3,
-      });
-      setLocation(currentLocation);
+      locationSubscription = await Location.watchPositionAsync(
+        { accuracy: Location.Accuracy.Highest, timeInterval: 1000 },
+        (newLocation) => {
+          setLocation(newLocation);
+          console.log(location?.coords.latitude, location?.coords.longitude);
+        }
+      );
     };
     try {
-      fetchLocation();
+      startLocationTracking();
     } catch (error) {}
   }, []);
 
+  // !updates washroom markers if there are any new washrooms
   useEffect(() => {
     const updateMarkers = async () => {
       const washroomData = await fetchWashrooms();
+
       if (!lodash.isEqual(washroomData.washrooms, washroomsState)) {
-        setWashrooms(washroomData.washrooms);
-        console.log(location ? "yes": "no")
-        console.log("different");
-        
+        console.log("changed");
+        await setWashrooms(washroomData.washrooms);
       } else {
         console.log("same");
       }
@@ -150,19 +154,47 @@ export default function App() {
     try {
       updateMarkers();
     } catch (error) {}
-  }, [washroomsState]);
+  }, [washroomsState, location]);
 
-  let textLocation = "Waiting...";
-  if (errorMsg) {
-    textLocation = errorMsg;
-  } else if (location) {
-    textLocation = JSON.stringify(location);
-  }
+  // !update filteredWashrooms as location or washrooms change
+  useEffect(() => {
+    if (location && washroomsState) {
+      let filteredWashrooms: IFilteredWashroom[] = washroomsState.map(
+        (washroom: IWashroom, index) => {
+          const distanceFromUser = getDistance(
+            {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            },
+            {
+              latitude: washroom.coordinates.latitude,
+              longitude: washroom.coordinates.longitude,
+            }
+          );
+          return {
+            ...washroom,
+            washroomContextIndex: index,
+            distanceFromUser: distanceFromUser,
+          };
+        }
+      );
+      filteredWashrooms.sort(
+        (washroom1, washroom2) =>
+          washroom1.distanceFromUser - washroom2.distanceFromUser
+      );
+      setUserDistanceWashrooms(filteredWashrooms);
+    }
+  }, [location, washroomsState]);
+
+  // let textLocation = "Waiting...";
+  // if (errorMsg) {
+  //   textLocation = errorMsg;
+  // } else if (location) {
+  //   textLocation = JSON.stringify(location);
+  // }
 
   // if the marker is pressed, shifts cards until current marker's card is presented
   const onMarkerPress = (mapEventData: MarkerPressEvent, markerId: number) => {
-    console.log(typeof mapEventData);
-    console.log(markerId);
     let x = markerId * CARD_WIDTH + markerId * 20;
     if (Platform.OS == "ios") {
       x = x - CARD_INSET;
@@ -175,7 +207,7 @@ export default function App() {
       <MapView
         style={styles.map}
         customMapStyle={mapStyle}
-        provider={PROVIDER_GOOGLE}
+        // provider={PROVIDER_GOOGLE}
         ref={(mapView) => {
           _mapView = mapView;
         }}
@@ -186,7 +218,7 @@ export default function App() {
         showsCompass={true}
         showsUserLocation={true}
       >
-        {washroomsState?.map((washroomMarker, index) => {
+        {userDistanceWashrooms?.map((washroomMarker, index) => {
           const scaleStyle = {
             transform: [
               {
@@ -216,6 +248,7 @@ export default function App() {
           <MaterialIcons
             name="crosshairs-gps"
             size={30}
+            color={"white"}
             onPress={() => {
               cameraToCurrentLocation();
             }}
@@ -225,7 +258,11 @@ export default function App() {
       <View style={styles.addWashroomContainer}>
         <TouchableOpacity>
           <Link href="/washroom/new">
-            <MaterialIcons name="plus" size={30}></MaterialIcons>
+            <MaterialIcons
+              name="plus"
+              color={"white"}
+              size={30}
+            ></MaterialIcons>
           </Link>
         </TouchableOpacity>
       </View>
@@ -258,17 +295,18 @@ export default function App() {
           { useNativeDriver: true }
         )}
       >
-        {washroomsState?.map((washroomMarker, index) => (
+        {userDistanceWashrooms?.map((washroomMarker) => (
           <Card
             id={washroomMarker._id.toString()}
             title={washroomMarker.name}
             rating={washroomMarker.rating}
+            distanceFromUser={washroomMarker.distanceFromUser}
             disabilityFriendly={washroomMarker.accessibility.disabilityFriendly}
             childFriendly={washroomMarker.accessibility.childFriendly}
             genderless={washroomMarker.accessibility.genderless}
             address={washroomMarker.street}
-            key={index}
-            washroomIndex={index}
+            key={washroomMarker.washroomContextIndex}
+            washroomContextIndex={washroomMarker.washroomContextIndex}
             onPress={() => {}}
           ></Card>
         ))}
@@ -290,7 +328,7 @@ const styles = StyleSheet.create({
     right: "2%",
     top: "12%",
     padding: 10,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#FF3B30",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -305,7 +343,7 @@ const styles = StyleSheet.create({
     left: "2%",
     top: "12%",
     padding: 10,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#FF3B30",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
