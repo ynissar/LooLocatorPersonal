@@ -2,7 +2,7 @@
 
 ![](./readme%20related/LooLocator.png)
 
-![](./readme%20related/IMG_1766.png) ![](./readme%20related/IMG_1767.jpg)
+<img src="./readme related/IMG_1766.png" alt="LooLocator Screenshot 1" width="250"/> <img src="./readme related/IMG_1767.jpg" alt="LooLocator Screenshot 2" width="250"/>
 Welcome to LooLocator, the ultimate solution for finding public washrooms in your vicinity, especially crucial when you're navigating a new city or just out and about. Our app is not just a utility; it's peace of mind, ensuring that you're never caught off guard when nature calls.
 
 ![](./readme%20related/RPReplay_Final1705427707.mov)
