@@ -8,7 +8,7 @@ Welcome to LooLocator, the ultimate solution for finding public washrooms in you
 
 ## 💡About LooLocator
 
-<img src="./readme related/IMG_1766.png" alt="LooLocator Screenshot 1" width="200"/> <img src="./readme related/IMG_1767.jpg" alt="LooLocator Screenshot 2" width="200"/>
+<img src="./readme related/loolocator gif.gif" alt="loolocator gif" width="200"/> <img src="./readme related/IMG_1766.png" alt="LooLocator Screenshot 1" width="200"/> <img src="./readme related/IMG_1767.jpg" alt="LooLocator Screenshot 2" width="200"/>
 
 LooLocator is designed for those moments when finding a clean, accessible public restroom becomes a priority. Whether you're shopping, touring, or in any daily scenario, our app swiftly locates the nearest restroom facilities based on your current location, saving you time and discomfort.
 
